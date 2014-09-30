@@ -1,17 +1,17 @@
 import sys
 import platform
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import base64
 import gzip
 import os
-from StringIO import StringIO
-from urlparse import urlparse
+from io import StringIO
+from urllib.parse import urlparse
 try:
   import json
 except ImportError:
   import simplejson as json
-from utils import VerifiedHTTPSConnection, json_to_py, get_faker
+from .utils import VerifiedHTTPSConnection, json_to_py, get_faker
 
 __version_info__ = ('4', '0', '0')
 __version__ = '.'.join(__version_info__)
@@ -54,7 +54,7 @@ class CreateSendBase(object):
     ]
     if state:
       params.append(('state', state))
-    return "%s?%s" % (CreateSend.oauth_uri, urllib.urlencode(params))
+    return "%s?%s" % (CreateSend.oauth_uri, urllib.parse.urlencode(params))
 
   def exchange_token(self, client_id, client_secret, redirect_uri, code):
     """Exchange a provided OAuth code for an OAuth access token, 'expires in'
@@ -66,7 +66,7 @@ class CreateSendBase(object):
       ('redirect_uri', redirect_uri),
       ('code', code),
     ]
-    response = self._post('', urllib.urlencode(params),
+    response = self._post('', urllib.parse.urlencode(params),
       CreateSend.oauth_token_uri, "application/x-www-form-urlencoded")
     access_token, expires_in, refresh_token = None, None, None
     r = json_to_py(response)
@@ -102,7 +102,7 @@ class CreateSendBase(object):
       ('grant_type', 'refresh_token'),
       ('refresh_token', refresh_token)
     ]
-    response = self._post('', urllib.urlencode(params),
+    response = self._post('', urllib.parse.urlencode(params),
       CreateSend.oauth_token_uri, "application/x-www-form-urlencoded")
     new_access_token, new_expires_in, new_refresh_token = None, None, None
     r = json_to_py(response)
@@ -169,7 +169,7 @@ class CreateSendBase(object):
   def build_url(self, parsed_base_uri, path, params):
     url = parsed_base_uri.path + path
     if params and len(params) > 0:
-      url = (url + "?%s" % urllib.urlencode(params))
+      url = (url + "?%s" % urllib.parse.urlencode(params))
     return url
 
   def handle_response(self, status, data):

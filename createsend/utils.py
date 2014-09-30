@@ -1,6 +1,6 @@
 import os
 import re
-import httplib
+import http.client
 import socket
 import ssl
 try:
@@ -69,7 +69,7 @@ def match_hostname(cert, hostname):
     raise CertificateError("no appropriate commonName or "
       "subjectAltName fields were found")
 
-class VerifiedHTTPSConnection(httplib.HTTPSConnection):
+class VerifiedHTTPSConnection(http.client.HTTPSConnection):
   """
   A connection that includes SSL certificate verification.
   """
@@ -117,7 +117,7 @@ def dict_to_object(d):
 	"""Recursively converts a dict to an object"""
 	top = type('CreateSendModel', (object,), d)
 	seqs = tuple, list, set, frozenset
-	for i, j in d.items():
+	for i, j in list(d.items()):
 	  if isinstance(j, dict):
 	    setattr(top, i, dict_to_object(j))
 	  elif isinstance(j, seqs):
